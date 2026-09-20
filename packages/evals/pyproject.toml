@@ -1,0 +1,17 @@
+[project]
+name = "ai-eng-4-eval-harness"
+version = "0.1.0"
+description = "Project #4 — Automated Eval Harness (DeepEval + RAGAS + golden tests + regression blocking)"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2",
+    "deepeval>=1.0",   # integration only; unit tests use stub scorers
+    "ragas>=0.2",      # integration only
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: requires DeepEval/RAGAS + LLM"]
