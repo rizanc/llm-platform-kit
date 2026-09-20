@@ -1,0 +1,25 @@
+[project]
+name = "llm-platform-kit"
+version = "0.1.0"
+description = "Small, tested building blocks for running LLM features in production: evals with a merge gate, cost-aware model routing, hybrid-search RAG with citations, and a vector store layer."
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["packages"]
+addopts = "--import-mode=importlib"
+pythonpath = [
+    "packages/evals",
+    "packages/router",
+    "packages/rag",
+    "packages/vectorstore",
+    "packages/local-dev",
+]
+markers = ["integration: needs a live service (Ollama, Qdrant, an API key); skipped unless RUN_INTEGRATION=1"]

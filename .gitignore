@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.DS_Store
+*.egg-info/
+.pytest_cache/
+uv.lock
+
+# runtime artifacts
+eval_history.jsonl
+spend.jsonl
+*.db
+snapshots/
+cache/
+docs/*.pdf
