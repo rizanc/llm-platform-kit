@@ -3,7 +3,7 @@ import numpy as np
 
 
 def hash_embedder(texts: list[str], dim: int = 768) -> np.ndarray:
-    """Same as project #1 — keeps tests reproducible without model downloads."""
+    """Deterministic; keeps tests reproducible without model downloads."""
     import hashlib
     out = np.zeros((len(texts), dim), dtype=np.float32)
     for i, t in enumerate(texts):

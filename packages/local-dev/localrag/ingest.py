@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 
 
 def chunk_text(text: str, chunk_size: int = 500, overlap: int = 50) -> list[str]:
-    """Char-based chunking; simple but predictable. Project #1 will swap in token-based."""
+    """Char-based chunking; simple but predictable. Swap in token-based chunking for production."""
     chunks, i = [], 0
     while i < len(text):
         chunks.append(text[i : i + chunk_size])

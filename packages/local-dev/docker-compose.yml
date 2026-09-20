@@ -1,13 +1,13 @@
 version: "3.9"
 
-# Project #7 — Local-First AI Dev Environment
-# Mirrors production RAG architecture (project #1, #12, #13) at zero API cost.
+# Local-first RAG dev stack
+# Same shape as the production RAG (packages/rag), zero API cost.
 # All services run on your laptop. No data leaves the machine.
 
 services:
   ollama:
     image: ollama/ollama:latest
-    container_name: ai-eng-ollama
+    container_name: llmkit-ollama
     ports: ["11434:11434"]
     volumes:
       - ollama_data:/root/.ollama
@@ -26,7 +26,7 @@ services:
 
   api:
     build: .
-    container_name: ai-eng-api
+    container_name: llmkit-api
     ports: ["8000:8000"]
     environment:
       OLLAMA_HOST: http://ollama:11434
@@ -45,7 +45,7 @@ services:
   # Optional: tiny UI for manual testing
   ui:
     image: ghcr.io/open-webui/open-webui:main
-    container_name: ai-eng-ui
+    container_name: llmkit-ui
     ports: ["3000:8080"]
     environment:
       OLLAMA_BASE_URL: http://ollama:11434
