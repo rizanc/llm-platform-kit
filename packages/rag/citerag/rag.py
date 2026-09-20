@@ -108,21 +108,27 @@ class HybridStore:
 
     # ---- retrieval
     def bm25_search(self, query: str, k: int = 20) -> list[tuple[str, float]]:
-        """Returns (chunk_id, bm25_score). Higher = better."""
+        """Returns (chunk_id, score), best match first, higher = better.
+
+        FTS5's bm25() is *lower is better* (usually negative), so we order
+        ascending and negate the score so callers can treat it like any other
+        relevance score. `query` is FTS5 MATCH syntax; sanitise user input
+        (e.g. join tokens with OR) before calling.
+        """
         cur = self.conn.cursor()
         try:
             rows = cur.execute(
-                "SELECT chunk_id, bm25(chunks_fts) FROM chunks_fts WHERE chunks_fts MATCH ? ORDER BY bm25(chunks_fts) DESC LIMIT ?",
+                "SELECT chunk_id, bm25(chunks_fts) FROM chunks_fts WHERE chunks_fts MATCH ? ORDER BY bm25(chunks_fts) ASC LIMIT ?",
                 (query, k),
             ).fetchall()
         except sqlite3.OperationalError:
             return []  # no FTS-indexed docs yet, or bad query syntax
-        return [(cid, s) for cid, s in rows if s is not None]
+        return [(cid, -s) for cid, s in rows if s is not None]
 
     def dense_search(self, query_vec: np.ndarray, k: int = 20) -> list[tuple[str, float]]:
         """Brute-force cosine. Returns (chunk_id, similarity). Higher = better.
 
-        For >10k chunks, swap sqlite-vec for Qdrant (project #12)."""
+        For >10k chunks use the Qdrant backend in the vectorstore package."""
         rows = self.conn.execute("SELECT chunk_id, vector FROM chunks_vec").fetchall()
         if not rows:
             return []

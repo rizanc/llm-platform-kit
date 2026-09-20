@@ -134,7 +134,7 @@ def test_graph_full_pipeline_grounds_answer():
 
 @pytest.mark.integration
 def test_graph_with_real_ollama():
-    """Integration: requires `docker compose up` from project #7 + Ollama."""
+    """Integration: requires Ollama running (see packages/local-dev)."""
     from citerag.embedders import ollama_embedder
     import httpx, tempfile
 
@@ -148,3 +148,15 @@ def test_graph_with_real_ollama():
         graph = build_graph(store, ollama_embedder(), stub_llm, reranker=None)
         r = graph.invoke({"query": "capital France"})
         assert r["grounding"]["grounding_rate"] == 1.0
+
+def test_bm25_ranks_more_relevant_chunk_first(tmp_path):
+    """Regression: FTS5 bm25() is lower-is-better; ordering DESC put the worst match first."""
+    store = HybridStore(tmp_path / "bm25.db")
+    chunks = [
+        Chunk("weak", "d", 1, "the planet is mentioned once in a long sentence about many other things entirely", tokenize("x")),
+        Chunk("strong", "d", 2, "planet planet planet", tokenize("x")),
+    ]
+    store.add(chunks, hash_embedder([c.text for c in chunks]))
+    ranked = store.bm25_search("planet", k=2)
+    assert [cid for cid, _ in ranked] == ["strong", "weak"]
+    assert ranked[0][1] > ranked[1][1]  # higher = better, as documented
