@@ -1,0 +1,20 @@
+[project]
+name = "ai-eng-1-prod-rag"
+version = "0.1.0"
+description = "Project #1 — Production RAG with Citations (hybrid search, reranking, grounding)"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "numpy>=2.0",
+    "langgraph>=0.2",
+    "pypdf>=5.0",
+    "pydantic>=2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "httpx>=0.27"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: needs Ollama running"]
