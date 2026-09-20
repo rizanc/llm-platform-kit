@@ -1,0 +1,15 @@
+[project]
+name = "ai-eng-2-model-router"
+version = "0.1.0"
+description = "Project #2 — Cost-Optimized Model Router (LiteLLM + Prometheus + spend tracking)"
+requires-python = ">=3.11"
+dependencies = [
+    "prometheus-client>=0.20",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: needs real LiteLLM / model API"]
