@@ -115,10 +115,23 @@ def test_citation_accuracy_no_citations():
     assert score_citation_accuracy(case, result) == 0.0
 
 
-def test_grounding_rate_alias():
-    case = GoldenCase("c1", "Q", expected_pages=[5])
+def test_grounding_rate_checks_citations_against_retrieved_set():
+    # Citation points at an expected page but that page was never retrieved:
+    # citation_accuracy is happy, grounding_rate is not. That gap is the point.
+    case = GoldenCase("c1", "Q", expected_pages=[5], expected_doc_ids=["d"])
     result = make_result("c1", "Q", "A", citations=[{"doc_id": "d", "page": 5}])
-    assert score_grounding_rate(case, result) == score_citation_accuracy(case, result)
+    result.retrieved_chunks = [{"doc_id": "d", "page": 9, "text": "unrelated"}]
+    assert score_citation_accuracy(case, result) == 1.0
+    assert score_grounding_rate(case, result) == 0.0
+    result.retrieved_chunks.append({"doc_id": "d", "page": 5, "text": "the answer"})
+    assert score_grounding_rate(case, result) == 1.0
+
+
+def test_citation_accuracy_matches_on_doc_id_when_page_differs():
+    # Regression test: this branch used to reference a field that did not exist.
+    case = GoldenCase("c1", "Q", expected_pages=[5], expected_doc_ids=["d"])
+    result = make_result("c1", "Q", "A", citations=[{"doc_id": "d", "page": 6}])
+    assert score_citation_accuracy(case, result) == 1.0
 
 
 # ---------------------- runner
@@ -228,7 +241,7 @@ def test_report_markdown_table():
     h = EvalHarness(HarnessConfig())
     results, summary = h.run(cases, stub_rag_system)
     md = report_markdown(results, summary)
-    assert "## Averages" in md
+    assert "# Eval report" in md
     assert "| Metric | Score |" in md
 
 

@@ -1,6 +1,6 @@
 """Stub RAG system for testing the harness.
 
-In production: from evalkit.rag import build_graph (project #1).
+Swap for your real pipeline; see evalkit.systems for reference adapters.
 """
 from evalkit.harness import CaseResult
 
