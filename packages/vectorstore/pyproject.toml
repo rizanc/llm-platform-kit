@@ -1,0 +1,18 @@
+[project]
+name = "ai-eng-12-vector-scale"
+version = "0.1.0"
+description = "Project #12 — Vector Database at Scale (hybrid + metadata + cache + backup)"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.0",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "qdrant-client>=1.10",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "httpx>=0.27"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: needs Qdrant running"]
