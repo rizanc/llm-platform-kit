@@ -26,7 +26,7 @@ one, the deterministic scorers still gate. The report is posted on the PR.
 
 ```
 uv sync --all-packages --all-extras
-uv run pytest -q                       # 90 unit tests, no network
+uv run pytest -q                       # 89 tests; 84 run offline, 5 integration tests skip
 uv run evalkit run                     # golden set vs the extractive baseline
 uv run evalkit run --judge             # add judge scorers (needs ANTHROPIC_API_KEY)
 python -m modelrouter report spend.jsonl

@@ -32,5 +32,5 @@ vectorkit/
   vecstore.py      VectorStore ABC, InMemoryVectorStore, HybridSearch, EmbedCache
   qdrant_store.py  QdrantVectorStore
   embedders.py     hash (tests) and ollama (real)
-tests/             10 unit tests + 1 integration
+tests/             11 unit tests + 1 integration
 ```
