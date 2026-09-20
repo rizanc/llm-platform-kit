@@ -1,15 +1,21 @@
 [project]
-name = "ai-eng-2-model-router"
+name = "modelrouter"
 version = "0.1.0"
-description = "Project #2 — Cost-Optimized Model Router (LiteLLM + Prometheus + spend tracking)"
+description = "Cost-aware model router: routes each request to the cheapest capable tier and keeps a per-request spend log; LiteLLM-backed caller optional."
 requires-python = ">=3.11"
+license = "MIT"
 dependencies = [
-    "prometheus-client>=0.20",
+
 ]
 
 [project.optional-dependencies]
+litellm = ["litellm>=1.50"]
+prometheus = ["prometheus-client>=0.20"]
 dev = ["pytest>=8"]
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-markers = ["integration: needs real LiteLLM / model API"]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["modelrouter"]

@@ -1,8 +1,9 @@
 [project]
-name = "ai-eng-7-local-dev"
+name = "localrag"
 version = "0.1.0"
-description = "Project #7 — Local-First AI Dev Environment (Ollama + LanceDB + FastAPI)"
+description = "Local-first RAG dev stack: Ollama + LanceDB + FastAPI in docker compose, zero API cost."
 requires-python = ">=3.11"
+license = "MIT"
 dependencies = [
     "fastapi>=0.115",
     "uvicorn[standard]>=0.32",
@@ -11,11 +12,15 @@ dependencies = [
     "ollama>=0.3",
     "pypdf>=5.0",
     "pydantic>=2",
+    "pydantic-settings>=2",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "httpx>=0.27"]
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-markers = ["integration: needs docker compose up"]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["localrag"]
