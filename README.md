@@ -13,8 +13,8 @@ spend log, the vector store swaps in behind the RAG store.
 | [`evalkit`](packages/evals) | Golden cases, deterministic and LLM-as-judge scorers, baseline regression gate wired into CI | 42 |
 | [`modelrouter`](packages/router) | Complexity-tiered routing to the cheapest capable model, LiteLLM caller, spend log that matches the bill | 27 |
 | [`citerag`](packages/rag) | SQLite FTS5 + cosine retrieval fused with RRF, page-level citations, grounding check | 11 |
-| [`vectorkit`](packages/vectorstore) | One interface over in-memory and Qdrant backends: hybrid search, filters, embed cache, snapshots | 11 |
-| [`localrag`](packages/local-dev) | Ollama + LanceDB + FastAPI in docker compose for zero-cost local development | 3 |
+| [`vectorkit`](packages/vectorstore) | One interface over in-memory and Qdrant backends: hybrid search, filters, embed cache, snapshots | 12 |
+| [`localrag`](packages/local-dev) | Ollama + LanceDB + FastAPI in docker compose for zero-cost local development | 4 |
 
 ## The merge gate
 
