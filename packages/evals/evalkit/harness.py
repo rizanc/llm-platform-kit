@@ -31,10 +31,16 @@ from statistics import mean, stdev
 from typing import Callable
 
 _WORD = re.compile(r"[A-Za-z0-9]+")
+_CITATION = re.compile(r"\[[^\]]*p\.\d+\]", re.IGNORECASE)  # "[doc, p.5]" / "[p.5]"
 
 
 def _tokens(text: str) -> list[str]:
     return _WORD.findall(text.lower())
+
+
+def _answer_tokens(text: str) -> list[str]:
+    """Answer tokens with citation markers removed, so citing is not penalised as hallucination."""
+    return _tokens(_CITATION.sub(" ", text))
 
 
 # ------------------------------------------------------------------ data model
@@ -77,7 +83,7 @@ def score_faithfulness(case: GoldenCase, result: CaseResult) -> float:
     tokens that came from nowhere. For a semantic version use
     `evalkit.judge.JudgeScorers.faithfulness`.
     """
-    ans = set(_tokens(result.answer))
+    ans = set(_answer_tokens(result.answer))
     if not ans:
         return 1.0
     ctx: set[str] = set()

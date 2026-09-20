@@ -1,0 +1,52 @@
+name: eval-gate
+
+# Runs the golden set against the reference system on every PR and blocks
+# the merge if any metric average drops more than 5 points below the
+# committed baseline (packages/evals/evalkit/golden/baseline.json).
+#
+# With ANTHROPIC_API_KEY set as a repository secret, the LLM-as-judge
+# scorers are added as well (faithfulness, relevancy, correctness).
+# Without it the gate runs on the deterministic scorers only.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - run: uv sync --all-packages --all-extras
+      - name: Run golden set and gate on regression
+        id: gate
+        working-directory: packages/evals
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          JUDGE=""
+          if [ -n "$ANTHROPIC_API_KEY" ]; then JUDGE="--judge"; fi
+          uv run evalkit run $JUDGE \
+            --baseline evalkit/golden/baseline.json \
+            --history "$RUNNER_TEMP/eval_history.jsonl" \
+            --report-md "$RUNNER_TEMP/eval-report.md" \
+            --max-regression 0.05
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report
+          path: ${{ runner.temp }}/eval-report.md
+      - name: Comment report on PR
+        if: always() && github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: ${{ runner.temp }}/eval-report.md

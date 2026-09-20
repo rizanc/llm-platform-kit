@@ -267,3 +267,10 @@ def test_all_metrics_bounded():
     for name, scorer in METRICS.items():
         v = scorer(case, result)
         assert 0.0 <= v <= 1.0, f"{name} returned {v}"
+
+def test_faithfulness_ignores_citation_markers():
+    case = GoldenCase("c1", "Q")
+    chunks = [{"doc_id": "d", "page": 5, "text": "Paris is the capital of France"}]
+    cited = make_result("c1", "Q", "Paris is the capital of France [d, p.5]", chunks=chunks)
+    bare = make_result("c1", "Q", "Paris is the capital of France", chunks=chunks)
+    assert score_faithfulness(case, cited) == score_faithfulness(case, bare) == 1.0

@@ -10,7 +10,14 @@ dependencies = [
 
 [project.optional-dependencies]
 judge = ["anthropic>=1.0"]
+systems = ["citerag"]
 dev = ["pytest>=8"]
+
+[project.scripts]
+evalkit = "evalkit.cli:main"
+
+[tool.uv.sources]
+citerag = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]
