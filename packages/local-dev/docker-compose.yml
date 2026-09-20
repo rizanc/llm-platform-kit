@@ -1,0 +1,60 @@
+version: "3.9"
+
+# Project #7 — Local-First AI Dev Environment
+# Mirrors production RAG architecture (project #1, #12, #13) at zero API cost.
+# All services run on your laptop. No data leaves the machine.
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ai-eng-ollama
+    ports: ["11434:11434"]
+    volumes:
+      - ollama_data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: metal
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  api:
+    build: .
+    container_name: ai-eng-api
+    ports: ["8000:8000"]
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+      LANCEDB_URI: /data/lancedb
+      EMBED_MODEL: nomic-embed-text
+      LLM_MODEL: llama3.1:8b
+    volumes:
+      - lancedb_data:/data/lancedb
+      - ./docs:/app/docs:ro
+    depends_on:
+      ollama:
+        condition: service_healthy
+    command: uvicorn localrag.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
+
+  # Optional: tiny UI for manual testing
+  ui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: ai-eng-ui
+    ports: ["3000:8080"]
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434
+    depends_on: [ollama]
+    volumes:
+      - ui_data:/app/backend/data
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
+  lancedb_data:
+  ui_data:
