@@ -1,4 +1,4 @@
-"""Prometheus metrics exporter (optional, integration-ready)."""
+"""Optional Prometheus exporter: call record(resp, tenant) after each route()."""
 from prometheus_client import Counter, Histogram
 
 REQUESTS = Counter(

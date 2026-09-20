@@ -73,7 +73,7 @@ def test_simple_query_routes_to_cheap():
     req = RouteRequest(request_id="r1", text="What is the weather today?")
     resp = r.route(req)
     assert resp.tier == "cheap"
-    assert resp.model == "gpt-4o-mini"  # cheapest in cheap tier
+    assert resp.model == "gpt-5-mini"  # cheapest in cheap tier
     assert resp.cost_usd >= 0
 
 
@@ -105,7 +105,7 @@ def test_force_tier_overrides_complexity():
     req = RouteRequest(request_id="r1", text="hello", force_tier="expensive")
     resp = r.route(req)
     assert resp.tier == "expensive"
-    assert resp.model in ("o1", "claude-opus")
+    assert resp.model == "claude-opus-5"
 
 
 def test_budget_cap_rejects_expensive_call():
@@ -118,10 +118,10 @@ def test_budget_cap_rejects_expensive_call():
 
 def test_router_picks_cheapest_in_tier():
     r = ModelRouter()
-    # All "cheap" tier — should pick gpt-4o-mini ($0.15/$0.60) over claude-haiku ($0.25/$1.25)
+    # All "cheap" tier: pick the cheaper of the two by input+output price
     req = RouteRequest(request_id="r1", text="hi", force_tier="cheap")
     resp = r.route(req)
-    assert resp.model == "gpt-4o-mini"
+    assert resp.model == "gpt-5-mini"
 
 
 def test_router_handles_no_model_for_tier():
@@ -139,7 +139,7 @@ def test_spend_accumulates_per_tenant_model():
     r = ModelRouter()
     for i in range(3):
         r.route(RouteRequest(request_id=f"r{i}", text="hi", tenant="acme"))
-    assert r.spend[("acme", "gpt-4o-mini")] > 0
+    assert r.spend[("acme", "gpt-5-mini")] > 0
     assert sum(r.spend.values()) > 0
 
 
